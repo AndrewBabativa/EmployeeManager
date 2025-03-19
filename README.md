@@ -85,6 +85,8 @@ A continuación, se presentan capturas de pantalla del flujo de la aplicación:
 
 *Pantalla de registro de usuario*  
 ![image](https://github.com/user-attachments/assets/a76c0b7b-d04c-4938-8437-0d40852709b8)
+*Registro creado en Mongo*
+![image](https://github.com/user-attachments/assets/a529c7a9-22f5-4fa6-bf85-6b3b8f2b4cb0)
 
 *Despues del registro exitoso se redirige a inicio de sesiòn donde si es exitoso debe generar un token en el localstorage para autenticación*  
 ![image](https://github.com/user-attachments/assets/a647f02e-2190-416e-a7ec-694dd952f2a3)
