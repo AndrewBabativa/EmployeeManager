@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
 import { useAuth } from "../hooks/useAuth";
 import { Employee } from "../models/Employee";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { employeeService } from "../services/employeeService";
+import { positionService } from "../services/positionService";
 
 const Dashboard = () => {
   const { logout, token } = useAuth();
@@ -18,17 +17,15 @@ const Dashboard = () => {
   const fetchEmployees = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get<Employee[]>(`${API_URL}/employees`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setEmployees(response.data);
+      const data = await employeeService.getAll();
+      setEmployees(data);
     } catch (error) {
       console.error("Error al cargar empleados:", error);
       setError("Error al cargar empleados.");
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, []);
   
   useEffect(() => {
     if (!token) return;
@@ -38,9 +35,8 @@ const Dashboard = () => {
    
   const fetchPositions = async () => {
     try {
-      const apiUrl = import.meta.env.VITE_POSITIONS_API;
-      const response = await axios.get<{ positions: string[] }>(apiUrl);
-      setPositions(response.data.positions);
+      const data = await positionService.getAll();
+      setPositions(data);
     } catch (error) {
       console.error("Error cargando posiciones:", error);
     }
@@ -48,10 +44,8 @@ const Dashboard = () => {
   
   const handleCreateEmployee = async () => {
     try {
-      const response = await axios.post<Employee>(`${API_URL}/employees`, newEmployee, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setEmployees([...employees, response.data]);
+      const createdEmployee = await employeeService.create(newEmployee);
+      setEmployees([...employees, createdEmployee]);
       setNewEmployee({ firstName: "", lastName: "", email: "", jobTitle: "", birthDate: "" });
     } catch (error) {
       console.error("Error al crear empleado:", error);
@@ -61,9 +55,7 @@ const Dashboard = () => {
   
   const handleUpdateEmployee = async (id: string, updatedEmployee: Partial<Employee>) => {
     try {
-      await axios.put(`${API_URL}/employees/${id}`, updatedEmployee, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await employeeService.update(id, updatedEmployee);
       setEmployees(employees.map(emp => (emp._id === id ? { ...emp, ...updatedEmployee } : emp)));
     } catch (error) {
       console.error("Error al actualizar empleado:", error);
@@ -73,9 +65,7 @@ const Dashboard = () => {
   
   const handleDeleteEmployee = async (id: string) => {
     try {
-      await axios.delete(`${API_URL}/employees/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await employeeService.delete(id);
       setEmployees(employees.filter(emp => emp._id !== id));
     } catch (error) {
       console.error("Error al eliminar empleado:", error);
